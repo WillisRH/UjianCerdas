@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Exam Home</title>
+    <!-- Include Bootstrap CSS and jQuery -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <h1>Welcome to the Online Exam</h1>
+
+    <!-- "Join Exam" button -->
+    <button id="join-exam-button" class="btn btn-primary">Join Exam</button>
+
+    <!-- Bootstrap modal for exam confirmation -->
+    <div class="modal fade" id="exam-confirmation-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Exam Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to join the exam?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirm-join">Join</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for handling button clicks and actions -->
+    <script>
+        // Function to handle the "Join Exam" button click
+        $('#join-exam-button').click(function() {
+            $('#exam-confirmation-modal').modal('show'); // Show the confirmation modal
+        });
+// Function to handle the "Join" button click in the confirmation modal
+// Function to handle the "Join" button click in the confirmation modal
+$(document).on('click', '#confirm-join', function() {
+    // Check if the page is not already in fullscreen mode
+    
+
+    // Redirect to the /join-exam route, which will introduce a 1-second delay
+    window.location.href = '/exam';
+});
+
+
+
+    </script>
+</body>
+</html>

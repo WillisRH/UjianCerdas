@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Exam</title>
+    <!-- Include Bootstrap CSS and jQuery -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        /* CSS to make text unselectable */
+        * {
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Online Exam</h1>
+    <div id="start-message">
+        <h3>To start this exam, click "Start Exam." If it doesn't pop up, please reload the page!</h3>
+    </div>
+
+    <!-- Start Exam Confirmation Popup -->
+    <div class="modal fade" id="start-exam-modal" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Start Exam</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Are you ready to start the exam?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="start-exam-button">Start Exam</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="exam-content">
+        <!-- Exam questions and content go here -->
+        <form id="exam-form">
+            <p class="uncopyable-text">Question 1: What is the capital of France?</p>
+            <label>
+                <input type="radio" name="answer1" value="paris"> Paris
+            </label>
+            <label>
+                <input type="radio" name="answer1" value="london"> London
+            </label>
+            <label>
+                <input type="radio" name="answer1" value="berlin"> Berlin
+            </label>
+            
+            <p class="uncopyable-text">Question 2: Who wrote "Romeo and Juliet"?</p>
+            <label>
+                <input type="radio" name="answer2" value="shakespeare"> Shakespeare
+            </label>
+            <label>
+                <input type="radio" name="answer2" value="dickens"> Dickens
+            </label>
+            <label>
+                <input type="radio" name="answer2" value="tolstoy"> Tolstoy
+            </label>
+            
+            <!-- Add more questions as needed -->
+            
+            <button type="button" id="submit-button" disabled>Submit Answers</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap modal for confirmation popup -->
+    <div class="modal fade" id="confirmation-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to submit your answers?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirm-submit">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap modal for cheating detection -->
+    <div class="modal fade" id="cheating-modal" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cheating Detected</h5>
+                </div>
+                <div class="modal-body">
+                    You've attempted cheating <span id="cheating-count">0</span>/5 times.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for tracking user actions and additional actions -->
+    <script>
+        let start = false;
+        let cheatingAttempts = 0;
+
+        
+        // Function to log user actions (you can implement logging as needed)
+        function logAction(action, details) {
+            $.ajax({
+                type: 'POST',
+                url: '/log',
+                contentType: 'application/json',
+                data: JSON.stringify({ action, details }),
+                success: function() {},
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        // Function to handle confirmation
+        function handleConfirmation() {
+            $('#confirmation-modal').modal('show');
+        }
+
+        // Show the start exam modal when the page loads
+        $(document).ready(function() {
+            $('#start-exam-modal').modal('show');
+            $(document).on('visibilitychange', function() {
+                if (document.visibilityState === 'hidden') {
+                    if(start) {
+                    // Page is not visible (e.g., tab is not in focus)
+                    logAction('Page Hidden');
+                    detectCheating(); // Call the cheating detection function
+                    }
+                }
+            });
+            if (!start) {
+                $('#exam-content').css('display', 'none'); // Initially hide exam content
+                $('#start-message').css('display', 'block'); // Show the start message
+            }
+            
+        });
+
+        // Function to handle confirmation
+        function submitForm() {
+            $('#confirmation-modal').modal('show');
+        }
+
+        $(document).on('click', '#confirm-submit', function() {
+            // You can perform the form submission logic here
+            // Redirect to the desired URL (e.g., "/done")
+            window.location.href = '/done';
+        });
+
+        // Add event listener to start the exam when the "Start Exam" button is clicked
+        $('#start-exam-button').on('click', function() {
+            start = true;
+            $('#start-exam-modal').modal('hide'); // Hide the modal
+            $('#exam-content').css('display', 'block'); // Show the exam content
+            $('#start-message').replaceWith("Semangat mengerjakan dan jangan coba-coba untuk menyontek!")
+            $('#submit-button').prop('disabled', false); // Enable the submit button
+        });
+
+        // Add event listener to show the confirmation modal when the submit button is clicked
+        $('#submit-button').on('click', function() {
+            submitForm();
+        });
+
+        // Cheating detection logic
+        // $(document).on('copy', function() {
+        //     if (start) {
+        //         logAction('Copying Text');
+        //         detectCheating();
+        //     }
+        // });
+
+        // $(document).on('keydown', function(event) {
+        //     if (start && (event.ctrlKey || event.metaKey) && event.key === 'c') {
+        //         logAction('Keyboard Shortcut: Copy');
+        //         detectCheating();
+        //     }
+        // });
+
+        // Function to detect cheating
+        function detectCheating() {
+            if (start) {
+                cheatingAttempts++;
+                $('#cheating-count').text(cheatingAttempts);
+                if (cheatingAttempts >= 5) {
+                    $('#cheating-modal').modal('show');
+                    $('#submit-button').prop('disabled', true);
+                }
+            }
+        }
+
+        const screenWidth = window.screen.width;
+const screenHeight = window.screen.height;
+const displayScale = window.devicePixelRatio;
+logAction('Screen Info', {
+    screenWidth,
+    screenHeight,
+    displayScale,
+});
+
+let previousWidth = $(window).width();
+let previousHeight = $(window).height();
+let resizeCounted = false; // Flag to track whether a resize event has been counted
+
+$(window).on('resize', function() {
+    const currentWidth = $(window).width();
+    const currentHeight = $(window).height();
+
+    if (start && !resizeCounted) {
+        cheatingAttempts++;
+        $('#cheating-count').text(cheatingAttempts);
+
+        if (currentWidth !== previousWidth || currentHeight !== previousHeight) {
+            logAction('Size Change', { previousWidth, currentWidth, previousHeight, currentHeight });
+            return window.location.href = '/cheat';
+
+            if (cheatingAttempts >= 5) {
+                $('#cheating-modal').modal('show');
+                $('#submit-button').prop('disabled', true);
+            }
+
+            resizeCounted = true; // Set the flag to true to prevent further counting during this resize event
+        }
+    } else {
+        // Reset the flag if the user resizes the window again
+        resizeCounted = false;
+    }
+
+    // Update previous width and height
+    previousWidth = currentWidth;
+    previousHeight = currentHeight;
+});
+    // }
+    </script>
+</body>
+</html>
