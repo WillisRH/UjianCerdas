@@ -1,13 +1,16 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const Cookies = require("cookies");
+const expressLayouts = require("express-ejs-layouts");
 
 const app = express();
 
 // Middleware setup
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(expressLayouts);
 app.set("view engine", "ejs"); // Set EJS as the template engine
+app.set("layout", "layouts/main");
 
 // Define routes and logic herec
 // Middleware for logging user actions
