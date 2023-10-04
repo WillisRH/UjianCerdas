@@ -10,13 +10,14 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
         /* CSS to make text unselectable */
-        * {
+         /* * {
             user-select: none;
             -moz-user-select: none;
             -webkit-user-select: none;
             -ms-user-select: none;
             text-align: center;
-        }
+        } */
+        
     </style>
 </head>
 <body>
@@ -102,7 +103,7 @@
                     <h5 class="modal-title">Cheating Detected</h5>
                 </div>
                 <div class="modal-body">
-                    You've attempted cheating <span id="cheating-count">0</span>/5 times.
+                    You've attempted cheating <span id="cheating-count"></span>/5 times.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
@@ -115,6 +116,9 @@
     <script>
         let start = false;
         let cheatingAttempts = 0;
+        // if (cheatingAttempts < 5) {
+        //     cheatingAttempts++;
+        // }
 
         
         // Function to log user actions (you can implement logging as needed)
@@ -139,15 +143,28 @@
         // Show the start exam modal when the page loads
         $(document).ready(function() {
             $('#start-exam-modal').modal('show');
-            $(document).on('visibilitychange', function() {
-                if (document.visibilityState === 'hidden') {
-                    if(start) {
-                    // Page is not visible (e.g., tab is not in focus)
-                    logAction('Page Hidden');
-                    detectCheating(); // Call the cheating detection function
-                    }
+            // $(document).on('visibilitychange', function() {
+            //     if (document.visibilityState === 'hidden') {
+            //         if(start) {
+            //         // Page is not visible (e.g., tab is not in focus)
+            //         logAction('Page Hidden');
+            //         detectCheating(); // Call the cheating detection function
+            //         }
+            //     }
+            // });
+
+            $(window).on('blur', function() {
+                if(start && !$('#cheating-modal').is(':visible')) {
+                    cheatingAttempts++;
+        logAction('Page Blurred');
+        // detectCheating(); // Call the cheating detection function
+        
+        $('#cheating-count').text(cheatingAttempts);
+        $('#cheating-modal').modal('show');
+                    $('#submit-button').prop('disabled', true);
                 }
-            });
+    });
+
             if (!start) {
                 $('#exam-content').css('display', 'none'); // Initially hide exam content
                 $('#start-message').css('display', 'block'); // Show the start message
@@ -224,7 +241,8 @@ $(window).on('resize', function() {
     const currentWidth = $(window).width();
     const currentHeight = $(window).height();
 
-    if (start && !resizeCounted) {
+
+    if (start && !resizeCounted ) {
         cheatingAttempts++;
         $('#cheating-count').text(cheatingAttempts);
 
@@ -247,6 +265,24 @@ $(window).on('resize', function() {
     // Update previous width and height
     previousWidth = currentWidth;
     previousHeight = currentHeight;
+});
+
+// Add event listener to handle the "OK" button click in the cheating detection modal
+jQuery(document).on('click', '#cheating-modal .btn-primary', function() {
+    
+    if (cheatingAttempts >= 5) {
+        // Redirect to /logout?lock
+        window.location.href = '/logout?lock';
+    } else {
+        // Close the modal
+        $('#cheating-modal').modal('hide');
+    }
+
+    // didnt work fak this
+    // if (cheatingAttempts == 4) {
+    //     $('#cheating-modal .btn-primary').removeClass('btn-primary').addClass('btn-danger').text('Logout & Lock');
+    //     return
+    // }
 });
     // }
     </script>
