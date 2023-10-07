@@ -1,0 +1,86 @@
+<link rel="stylesheet" type="text/css" href="/css/signuphandler.css" />
+<script src="/js/showpw.js"></script>
+
+<% if (locals.error) { %>
+<h5 class="text-danger">Error!</h5>
+<h6 class="mb-5"><%= error %></h6>
+<% } %>
+<h1>Sign Up</h1>
+<form action="/home/askme/admin/signupatt" method="post">
+  <div class="form-row">
+    <div class="col-12 mt-5">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1"
+            ><i class="fas fa-user"></i
+          ></span>
+        </div>
+        <input
+          name="username"
+          type="text"
+          value=""
+          class="input form-control"
+          id="username"
+          placeholder="Username"
+          aria-label="Username"
+          aria-describedby="basic-addon1"
+        />
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1"
+            ><i class="fas fa-envelope"></i
+          ></span>
+        </div>
+        <input
+          name="email"
+          type="email"
+          value=""
+          class="input form-control"
+          id="email"
+          placeholder="Email"
+          aria-label="Email"
+          aria-describedby="basic-addon1"
+        />
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1"
+            ><i class="fas fa-lock"></i
+          ></span>
+        </div>
+        <input
+          name="password"
+          type="password"
+          value=""
+          class="input form-control"
+          id="password"
+          placeholder="Password"
+          required="true"
+          aria-label="password"
+          aria-describedby="basic-addon1"
+        />
+        <div class="input-group-append">
+          <span class="input-group-text" onclick="password_show_hide();">
+            <i class="fas fa-eye" id="show_eye"></i>
+            <i class="fas fa-eye-slash d-none" id="hide_eye"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 pt-3 text-right">
+      <p>
+        Already have an account? <a href="/home/askme/admin/login">Sign In</a>
+      </p>
+    </div>
+    <div class="col-12">
+      <button class="btn btn-dark btn-lg" type="submit" name="signin">
+        Sign Up
+      </button>
+    </div>
+  </div>
+</form>

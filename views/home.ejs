@@ -13,13 +13,13 @@
   <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
   <style>
     /* CSS to make text unselectable */
-    /* * {
+    * {
             user-select: none;
             -moz-user-select: none;
             -webkit-user-select: none;
             -ms-user-select: none;
             text-align: center;
-        } */
+        }
   </style>
 </head>
 
@@ -48,49 +48,34 @@
 
   <div id="exam-content" class="text-center">
     <!-- User credentials and exam code -->
-    <h5 class="text-white">Nama : <%= locals.username %></h5>
-    <h5 class="text-white">Kode Soal : <%= locals.kodesoal %></h5>
-
+    <h5 class="text-white">Nama : <%= username %></h5>
+    <h5 class="text-white">Kode Soal : <%= kodesoal %></h5>
+  
     <!-- Timer -->
     <h5 class="text-white" id="timer">00:00:00</h5>
+  
     <!-- Exam questions and content go here -->
     <form id="exam-form" class="container-fluid rounded-lg bg-light p-5 text-left shadow-lg" style="max-width: 500px;">
+      <% for (let i = 0; i < exam.length; i++) { %>
       <div class="mb-5">
-        <h5 class="uncopyable-text ">Pertanyaan 1: Apa nama ibukota negara Prancis?</h5>
-        <div id="answers" class="text-left d-block">
-          <label class="d-block">
-            <input type="radio" name="answer1" value="paris"> Paris
-          </label>
-          <label class="d-block">
-            <input type="radio" name="answer1" value="london"> London
-          </label>
-          <label class="d-block">
-            <input type="radio" name="answer1" value="berlin"> Berlin
-          </label>
-        </div>
-
-      </div>
-
-      <div class="mb-5">
-        <h5 class="uncopyable-text">Pertanyaan 2: Siapa yang menulis "Romeo and Juliet"?</h5>
+        <h5 class="uncopyable-text">Pertanyaan <%= i + 1 %>: <%= exam[i].question %></h5>
         <div id="answers" class="d-block text-left">
+          <% for (let j = 0; j < exam[i].choices.length; j++) { %>
           <label class="d-block">
-            <input type="radio" name="answer2" value="shakespeare"> Shakespeare
+            <input type="radio" name="answer<%= i + 1 %>" value="<%= exam[i].choices[j] %>">
+            <%= exam[i].choices[j] %>
           </label>
-          <label class="d-block">
-            <input type="radio" name="answer2" value="dickens"> Dickens
-          </label>
-          <label class="d-block">
-            <input type="radio" name="answer2" value="tolstoy"> Tolstoy
-          </label>
+          <% } %>
         </div>
       </div>
-
+      <% } %>
+  
       <!-- Add more questions as needed -->
-
+  
       <button type="button" id="submit-button" class="btn btn-success" disabled>Selesai mengerjakan</button>
     </form>
   </div>
+  
 
   <!-- Bootstrap modal for confirmation popup -->
   <div class="modal fade" id="confirmation-modal" tabindex="-1" role="dialog">
@@ -132,12 +117,15 @@
 
   <!-- JavaScript for tracking user actions and additional actions -->
   <script>
+    var username = '<%= username %>';
     let start = false;
+    let finished = false;
     let cheatingAttempts = 0;
     // if (cheatingAttempts < 5) {
     //     cheatingAttempts++;
     // }
 
+    console.log(username)
 
     // Function to log user actions (you can implement logging as needed)
     function logAction(action, details) {
@@ -147,7 +135,9 @@
         contentType: 'application/json',
         data: JSON.stringify({
           action,
-          details
+          details,
+          username,
+          attempts: cheatingAttempts
         }),
         success: function() {},
         error: function(error) {
@@ -182,7 +172,9 @@
 
           $('#cheating-count').text(cheatingAttempts);
           $('#cheating-modal').modal('show');
+          if (cheatingAttempts >= 5) {
           $('#submit-button').prop('disabled', true);
+          }
         }
       });
 
@@ -220,12 +212,15 @@
     });
 
     // Cheating detection logic
-    // $(document).on('copy', function() {
-    //     if (start) {
-    //         logAction('Copying Text');
-    //         detectCheating();
-    //     }
-    // });
+    $(document).on('copy', function() {
+        if (start) {
+            cheatingAttempts++;
+            $('#cheating-count').text(cheatingAttempts);
+            $('#cheating-modal').modal('show');
+            logAction('Copying Text');
+            // detectCheating();
+        }
+    });
 
     // $(document).on('keydown', function(event) {
     //     if (start && (event.ctrlKey || event.metaKey) && event.key === 'c') {
@@ -273,7 +268,8 @@
             previousWidth,
             currentWidth,
             previousHeight,
-            currentHeight
+            currentHeight,
+
           });
           return window.location.href = '/cheat';
 
