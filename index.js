@@ -25,6 +25,9 @@ app.use((req, res, next) => {
   console.log(username + " " + kodesoal)
   next();
 });
+
+
+
 // Route for the exam page
 app.get("/exam/:id/:id", async (req, res) => {
   const cookies = new Cookies(req, res);

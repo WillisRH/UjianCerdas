@@ -13,13 +13,13 @@
   <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
   <style>
     /* CSS to make text unselectable */
-    * {
+    /* * {
             user-select: none;
             -moz-user-select: none;
             -webkit-user-select: none;
             -ms-user-select: none;
             text-align: center;
-        }
+        } */
   </style>
 </head>
 
@@ -58,7 +58,7 @@
     <form id="exam-form" class="container-fluid rounded-lg bg-light p-5 text-left shadow-lg" style="max-width: 500px;">
       <% for (let i = 0; i < exam.length; i++) { %>
       <div class="mb-5">
-        <h5 class="uncopyable-text">Pertanyaan <%= i + 1 %>: <%= exam[i].question %></h5>
+        <h5 class="uncopyable-text">Pertanyaan <%= i + 1 %> <h6>(<%= exam[i].questionid %>)</h6> <%= exam[i].question %></h5>
         <div id="answers" class="d-block text-left">
           <% for (let j = 0; j < exam[i].choices.length; j++) { %>
           <label class="d-block">
@@ -118,6 +118,8 @@
   <!-- JavaScript for tracking user actions and additional actions -->
   <script>
     var username = '<%= username %>';
+    var id = '<%= id %>';
+    var kodesoal = '<%= kodesoal %>';
     let start = false;
     let finished = false;
     let cheatingAttempts = 0;
@@ -125,6 +127,22 @@
     //     cheatingAttempts++;
     // }
 
+    function SessionAdd(username, id, kodesoal) {
+      $.ajax({
+        type: 'POST',
+        url: '/session',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          username,
+          id,
+          kodesoal,
+        }),
+        success: function() {},
+        error: function(error) {
+          console.error('Error:', error);
+        }
+      });
+    }
     console.log(username)
 
     // Function to log user actions (you can implement logging as needed)
@@ -164,6 +182,10 @@
       //     }
       // });
 
+
+
+    //   SessionAdd(username, id, kodesoal)
+
       $(window).on('blur', function() {
         if (start && !$('#cheating-modal').is(':visible')) {
           cheatingAttempts++;
@@ -182,7 +204,10 @@
         $('#exam-content').css('display', 'none'); // Initially hide exam content
         $('#start-message').css('display', 'block'); // Show the start message
       }
-
+      if (cheatingAttempts >= 5) {
+            $('#cheating-modal').modal('show');
+            $('#submit-button').prop('disabled', true);
+          }
     });
 
     // Function to handle confirmation
@@ -197,6 +222,7 @@
     });
 
     // Add event listener to start the exam when the "Start Exam" button is clicked
+
     $('#start-exam-button').on('click', function() {
       playing = true
       start = true;
@@ -212,15 +238,23 @@
     });
 
     // Cheating detection logic
-    $(document).on('copy', function() {
-        if (start) {
-            cheatingAttempts++;
-            $('#cheating-count').text(cheatingAttempts);
-            $('#cheating-modal').modal('show');
-            logAction('Copying Text');
-            // detectCheating();
-        }
-    });
+    $(document).on('copy', function(event) {
+  if (start) {
+    event.preventDefault(); // Prevent the default copy behavior
+
+    // Set your custom text as the copied content
+    const customText = "Gabisa nyontek ya.";
+    const clipboardData = event.originalEvent.clipboardData || window.clipboardData;
+    clipboardData.setData('text', customText);
+
+    cheatingAttempts++;
+    $('#cheating-count').text(cheatingAttempts);
+    $('#cheating-modal').modal('show');
+    logAction('Copying Text');
+    // detectCheating();
+  }
+});
+
 
     // $(document).on('keydown', function(event) {
     //     if (start && (event.ctrlKey || event.metaKey) && event.key === 'c') {
@@ -260,8 +294,8 @@
 
 
       if (start && !resizeCounted) {
-        cheatingAttempts++;
-        $('#cheating-count').text(cheatingAttempts);
+        // cheatingAttempts++;
+        // $('#cheating-count').text(cheatingAttempts);
 
         if (currentWidth !== previousWidth || currentHeight !== previousHeight) {
           logAction('Size Change', {
@@ -273,10 +307,7 @@
           });
           return window.location.href = '/cheat';
 
-          if (cheatingAttempts >= 5) {
-            $('#cheating-modal').modal('show');
-            $('#submit-button').prop('disabled', true);
-          }
+          
 
           resizeCounted = true; // Set the flag to true to prevent further counting during this resize event
         }
