@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const Cookies = require("cookies");
 const cors = require("cors");
 const axios = require("axios");
+const expressLayouts = require("express-ejs-layouts");
 require("dotenv").config();
 
 const app = express();
@@ -13,7 +14,9 @@ const API_URL = process.env.API_URL;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
+app.use(expressLayouts);
 app.set("view engine", "ejs"); // Set EJS as the template engine
+app.set("layout", "layouts/main");
 
 // Define routes and logic herec
 // Middleware for logging user actions
@@ -37,7 +40,7 @@ app.get("/exam/:id/:id", async (req, res) => {
   const kodesoal = cookies.get("kodesoal");
 
   try {
-    const response = await fetch("${API_URL}/api/exams/fetch", {
+    const response = await fetch(`${API_URL}/api/exams/fetch`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, id, kodesoal }),
