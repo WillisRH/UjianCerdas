@@ -73,7 +73,7 @@ app.get("/create", (req, res) => {
 });
 
 app.get("/done", (req, res) => {
-  res.send("done gak bang? done."); // Render the exam page using EJS template
+  res.render("done");
 });
 
 app.post("/create", async (req, res) => {
