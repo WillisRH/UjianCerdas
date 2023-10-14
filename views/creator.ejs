@@ -3,29 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Creator</title>
+    <title>Mapel Creator</title>
 </head>
 <body>
-    <h1>Exam Creator</h1>
+    <h1>Mapel Creator</h1>
 
-    <% if (typeof examCreated !== 'undefined') { %>
-        <h2>Exam Created Successfully!</h2>
-        <p>Question: <%= examCreated.question %></p>
-        <p>Choices: <%= examCreated.choices.join(', ') %></p>
-        <p>Answer: <%= examCreated.answer %></p>
+    <% if (typeof mapelCreated !== 'undefined') { %>
+        <h2>Mapel Created Successfully!</h2>
+        <p>Mapel Name: <%= mapelCreated.mapel.mapelname %></p>
+        <!-- You can display other mapel information here -->
     <% } %>
 
-    <form action="/create" method="POST">
-        <label for="question">Question:</label>
-        <input type="text" id="question" name="question" required><br>
+    <form action="/mapelcreate" method="POST">
+        <label for="mapelname">Mapel Name:</label>
+        <input type="text" id="mapelname" name="mapelname" required><br>
+        <!-- You can add more input fields for other mapel properties here -->
 
-        <label for="choices">Choices (comma-separated):</label>
-        <input type="text" id="choices" name="choices" required><br>
-
-        <label for="answer">Answer:</label>
-        <input type="text" id="answer" name="answer" required><br>
-
-        <button type="submit">Create Exam</button>
+        <button type="submit">Create Mapel</button>
     </form>
 </body>
 </html>

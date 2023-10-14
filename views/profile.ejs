@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title><%= title %></title>
+    </head>
+    <body>
+        <h1><%= title %></h1>
+        <h2>Welcome to your profile page</h2>
+    
+        <% if (data) { %>
+            <p>Username: <%= data.username %></p>
+            <p>Email: <%= data.email %></p>
+            <p>User ID: <%= data.id %></p>
+            <p>User Type: <%= data.usertype %></p>
+            <p>Blocked: <%= data.blocked %></p>
+            <p>Created At: <%= data.createdAt %></p>
+        <% } %>
+    
+        <!-- Add more profile information as needed -->
+    
+        <a href="/">Back to Home</a>
+    </body>
+
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+h2 {
+    text-align: center;
+    color: #555;
+}
+
+p {
+    font-size: 18px;
+    color: #333;
+    margin: 10px 0;
+    text-align: center;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #007BFF;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+    </style>
+</html>

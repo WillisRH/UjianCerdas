@@ -78,31 +78,31 @@ app.get("/done", (req, res) => {
   res.send("done gak bang? done."); // Render the exam page using EJS template
 });
 
-app.post('/create', async (req, res) => {
-  try {
-    // Get the exam data from the user input
-    const { question, choices, answer } = req.body;
+app.post('/mapelcreate', async (req, res) => {
+	try {
+	  // Get the mapel data from the user input
+	  const { mapelname, owner } = req.body;
+	  const cookies = new Cookies(req, res);
+	  const id = cookies.get("id")
 
-    // Create an object with the user input
-    const examData = {
-      questionid: Math.floor(Math.random() * 99999),
-      question,
-      choices: choices.split(','), // Split the choices string into an array
-      answer,
-      isEssay: false
+	  // Create an object with the user input
+	  const mapelData = {
+		mapelname, // Replace with your mapelid input
+		owner: id, // Replace with your owner input
+	  };
+  
+	  // Make a POST request to create the mapel
+	  const response = await axios.post('http://localhost:51000/api/mapel/create', mapelData);
 
-    };
+	  console.log(response.data)
 
-    // Make a POST request to create the exam
-    const response = await axios.post('http://localhost:51000/api/exams', examData);
-
-    // Render the "creator" page using EJS after the exam is created
-    res.render('creator', { examCreated: response.data });
-  } catch (error) {
-    console.error('Error creating exam via Axios:', error);
-    res.status(500).json({ error: 'Failed to create exam' });
-  }
-});
+	  // Render the "creator" page using EJS after the mapel is created
+	  res.render('creator', { mapelCreated: response.data }); // You can update the EJS rendering as needed
+	} catch (error) {
+	  console.error('Error creating mapel via Axios:', error);
+	  res.status(500).json({ error: 'Failed to create mapel' });
+	}
+  });
 
 // Route for receiving user actions (POST request)
 app.post("/log", (req, res) => {
@@ -170,7 +170,7 @@ app.post("/home/askme/admin/signupatt", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { username, password, kodesoal } = req.body;
+  const { username, password } = req.body;
 
   console.log(username, password)
 
@@ -192,21 +192,25 @@ app.post("/login", async (req, res) => {
 			throw new Error(response.statusText, "\n Error");
 		}
 		const json = await response.json();
-		let expires = new Date();
-		expires.setSeconds(expires.getSeconds() + 3600);
-		let cookies = new Cookies(req, res);
-		cookies.set("token", json.token, { expires: expires });
-		cookies.set("email", json.email, { expires: expires });
-		cookies.set("username", json.username, { expires: expires });
-		cookies.set("id", json.id, { expires: expires });
-    cookies.set("kodesoal", kodesoal);
+let expires = new Date();
+expires.setSeconds(expires.getSeconds() + 3600);
+let cookies = new Cookies(req, res);
+
+const userData = json.user;
+
+cookies.set("token", userData.token, { expires: expires });
+cookies.set("email", userData.email, { expires: expires });
+cookies.set("username", userData.username, { expires: expires });
+cookies.set("type", userData.usertype, { expires: expires });
+cookies.set("id", userData.id, { expires: expires });
+
 		// console.log('Success logged in with username \'' + username + "\'\nRedirecting to admin page! (200)")
 		// res.render("home", {
     //   username,
     //   password,
     //   kodesoal,
     // });
-    res.redirect(`/exam/${cookies.get("id")}/${cookies.get("kodesoal")}`)
+    res.redirect(`/profile`)
 		console.log(json)
 
 		// if(json.token) localStorage.setItem('token', json.token);
@@ -249,6 +253,26 @@ app.get("/logout", async (req, res) => {
 		success: "Your account has been logged out!",
 	});
 });
+
+app.get("/profile", async (req, res) => {
+	let cookies = new Cookies(req, res);
+	const id = cookies.get("id");
+	const response = await fetch("http://localhost:51000/api/getuserdata", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ id }),
+	});
+	const data = await response.json();
+	console.log(data)
+
+	res.render("profile.ejs", {
+		title: `${data.username} Profile Pages`,
+		data
+	});
+});
+
+
+
 
 // Serve static files (e.g., stylesheets, JavaScript)
 app.use(express.static("public"));

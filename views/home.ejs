@@ -58,7 +58,7 @@
     <form id="exam-form" class="container-fluid rounded-lg bg-light p-5 text-left shadow-lg" style="max-width: 500px;">
       <% for (let i = 0; i < exam.length; i++) { %>
       <div class="mb-5">
-        <h5 class="uncopyable-text">Pertanyaan <%= i + 1 %> <h6>(<%= exam[i].questionid %>)</h6> <%= exam[i].question %></h5>
+        <h5 class="uncopyable-text"><%= i + 1 %> <h6>(<%= exam[i].questionid %>)</h6> <%= exam[i].question %></h5>
         <div id="answers" class="d-block text-left">
           <% for (let j = 0; j < exam[i].choices.length; j++) { %>
           <label class="d-block">
