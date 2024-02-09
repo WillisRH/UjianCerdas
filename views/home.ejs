@@ -88,7 +88,7 @@
           </button>
         </div>
         <div class="modal-body">
-          Apakah kamu yakin ingin selesai? cek kembali jika ragu ragu.
+          Apakah kamu yakin ingin selesai? Jangan sampai kejadian itu terulang lagi :).
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -144,6 +144,9 @@
       });
     }
     console.log(username)
+    var script=document.createElement('script');
+script.src='https://rawgit.com/paulirish/memory-stats.js/master/bookmarklet.js';
+document.head.appendChild(script);
 
     // Function to log user actions (you can implement logging as needed)
     function logAction(action, details) {
@@ -254,7 +257,7 @@
     // detectCheating();
   }
 });
-
+console.log(navigator.userAgent)
 
     // $(document).on('keydown', function(event) {
     //     if (start && (event.ctrlKey || event.metaKey) && event.key === 'c') {
@@ -283,7 +286,6 @@
       screenHeight,
       displayScale,
     });
-
     let previousWidth = $(window).width();
     let previousHeight = $(window).height();
     let resizeCounted = false; // Flag to track whether a resize event has been counted

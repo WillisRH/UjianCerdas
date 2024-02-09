@@ -1,64 +1,234 @@
+<!-- Profile Page EJS -->
+
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><%= title %></title>
-    </head>
-    <body>
-        <h1><%= title %></h1>
-        <h2>Welcome to your profile page</h2>
-    
-        <% if (data) { %>
-            <p>Username: <%= data.username %></p>
-            <p>Email: <%= data.email %></p>
-            <p>User ID: <%= data.id %></p>
-            <p>User Type: <%= data.usertype %></p>
-            <p>Blocked: <%= data.blocked %></p>
-            <p>Created At: <%= data.createdAt %></p>
-        <% } %>
-    
-        <!-- Add more profile information as needed -->
-    
-        <a href="/">Back to Home</a>
-    </body>
 
-<style>
-    body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
-    padding: 0;
-}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
 
-h1 {
-    text-align: center;
-    color: #333;
-}
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
 
-h2 {
-    text-align: center;
-    color: #555;
-}
+<body class="bg-light">
 
-p {
-    font-size: 18px;
-    color: #333;
-    margin: 10px 0;
-    text-align: center;
-}
+    <div class="container mt-5">
+        <div class="card mx-auto" style="max-width: 600px;">
+            <div class="card-body">
+                <h1 class="text-center">Profile Page</h1>
+                <h6 class="text-center">Place where you can customize your profile.</h6>
 
-a {
-    display: block;
-    text-align: center;
-    margin-top: 20px;
-    text-decoration: none;
-    color: #007BFF;
-}
+                <% if (userData) { %>
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <p class="lead">Username: <%= userData.username %></p>
+                        <p class="lead">Email: <%= userData.email %></p>
+                        <p class="lead">User ID: <%= userData.id %></p>
+                        <p class="lead">User Type: <%= userData.usertype %></p>
+                        <p class="lead">Blocked: <%= userData.blocked %></p>
+                        <p class="lead">Created At: <%= userData.createdAt %></p>
+                    </div>
+                </div>
+                <% } %>
 
-a:hover {
-    text-decoration: underline;
-}
+                <% if (mapelData && mapelData.mapels) { %>
+                    <div class="row justify-content-center mt-3">
+                        <div class="col-md-10">
+                            <h5 class="text-center">Your Mapel:</h5>
+                            <ul class="list-group">
+                                <% mapelData.mapels.forEach(mapel => { %>
+                                    <!-- Wrap the list item content with an anchor tag -->
+                                    <a href="/profile/mapel/<%= mapel.mapelid %>/edit" class="list-group-item list-group-item-action">
+                                        <strong>Mapel Strong ID:</strong> <%= mapel._id %><br>
+                                        <strong>Mapel ID:</strong> <%= mapel.mapelid %><br>
+                                        <strong>Mapel Name:</strong> <%= mapel.mapelname %><br>
+                                        <strong>Creator:</strong> <%= userData.username %> <h6>(its using userData.username which is not reliable)</h6>
+                                    </a>
+                                    <!-- Add more quiz details as needed -->
+                                <% }); %>
+                            </ul>
+                        </div>
+                    </div>
+                <% } %>
 
-    </style>
+                <!-- Button to trigger modal -->
+                <div class="row justify-content-center mt-3">
+                    <div class="col-md-6 text-center">
+                        <button type="button" class="btn btn-success btn-block mt-3" data-toggle="modal" data-target="#createMapelModal">
+                            Create a new Mapel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add your modal here -->
+                <div class="modal fade" id="createMapelModal" tabindex="-1" role="dialog" aria-labelledby="createMapelModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="createMapelModalLabel">Create New Mapel</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Form to create a new Mapel -->
+                                <form id="createMapelFormModal">
+                                    <div class="form-group">
+                                        <label for="mapelnameModal">Mapel Name:</label>
+                                        <input type="text" id="mapelnameModal" name="mapelname" class="form-control" required>
+                                        <!-- You can add more input fields for other mapel properties here -->
+                                    </div>
+                                    <!-- Add a hidden input for the owner ID -->
+                                    <input type="hidden" id="ownerModal" name="owner" value="<%= userData.id %>">
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="createMapelModal()">Create Mapel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing content -->
+
+                <div class="row justify-content-center mt-3">
+                    <div class="col-md-6 text-center">
+                        <a href="/" class="btn btn-primary btn-block mt-3">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://rawgit.com/paulirish/memory-stats.js/master/bookmarklet.js"></script>
+
+    <script>
+        // Add your existing scripts here
+
+        function createMapelModal() {
+            // Get form data from modal
+            const mapelname = document.getElementById('mapelnameModal').value;
+            const owner = document.getElementById('ownerModal').value;
+
+            // Create an object with the user input
+            const mapelData = {
+                mapelname,
+                owner,
+            };
+
+            // Make a POST request to create the mapel
+            fetch('http://localhost:51000/api/mapel/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(mapelData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Mapel created:', data);
+
+                // Check if the creation was successful
+                if (data.message === 'Mapel created successfully') {
+                    // Display Bootstrap toast for success
+                    showToast('Mapel Created Successfully!', 'alert-success', 5000); // 5000 milliseconds (5 seconds)
+
+                    // Fetch updated mapel data and update the list
+                    fetchMapelDataAndUpdateList();
+                } else {
+                    // Display Bootstrap toast for error
+                    showToast(`Error Creating Mapel: ${data.message}`, 'alert-danger', 5000); // 5000 milliseconds (5 seconds)
+                }
+            })
+            .catch(error => console.error('Error creating mapel:', error));
+
+            // Close the modal
+            $('#createMapelModal').modal('hide');
+        }
+
+        // Function to fetch updated mapel data and update the list
+        function fetchMapelDataAndUpdateList() {
+            // Fetch updated mapel data
+            fetch('http://localhost:51000/api/fetch/mapel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ owner: document.getElementById('owner').value }),
+            })
+            .then(response => response.json())
+            .then(mapelData => {
+                console.log('Updated Mapel Data:', mapelData);
+
+                // Update the DOM with the updated mapel data
+                updateMapelList(mapelData);
+            })
+            .catch(error => console.error('Error fetching mapel data:', error));
+        }
+
+        // Function to update the mapel list in the DOM
+        function updateMapelList(mapelData) {
+            const mapelListContainer = document.getElementById('mapelList');
+
+            // Clear the existing mapel list
+            mapelListContainer.innerHTML = '';
+
+            // Add the updated mapel list to the DOM
+            if (mapelData && mapelData.mapels) {
+                mapelData.mapels.forEach(mapel => {
+                    const mapelItem = document.createElement('li');
+                    mapelItem.className = 'list-group-item';
+                    mapelItem.innerHTML = `
+                        <strong>Mapel ID:</strong> ${mapel.mapelid}<br>
+                        <strong>Mapel Name:</strong> ${mapel.mapelname}<br>
+                    `;
+                    mapelListContainer.appendChild(mapelItem);
+                });
+            }
+        }
+
+        // Function to show Bootstrap toast
+        function showToast(message, alertClass, duration) {
+            const toastElement = document.createElement('div');
+            toastElement.className = `toast ${alertClass}`;
+            toastElement.style.position = 'fixed';
+            toastElement.style.top = '0';
+            toastElement.style.right = '0';
+            toastElement.style.margin = '10px';
+
+            toastElement.innerHTML = `
+                <div class="toast-header">
+                    <strong class="mr-auto">Notification</strong>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            `;
+
+            // Set autohide and delay attributes
+            $(toastElement).toast({ autohide: true, delay: duration });
+
+            // Append toast to the body and show it
+            document.body.appendChild(toastElement);
+            $(toastElement).toast('show');
+
+            // Remove the toast after it is hidden
+            $(toastElement).on('hidden.bs.toast', function () {
+                document.body.removeChild(toastElement);
+            });
+        }
+    </script>
+
+</body>
+
 </html>

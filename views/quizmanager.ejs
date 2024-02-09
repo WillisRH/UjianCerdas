@@ -1,0 +1,155 @@
+<!-- mapelmanager.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapel Editor</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center">Quiz Manager</h1>
+
+        <% if (userData) { %>
+            <div class="row justify-content-center mt-3">
+                <div class="col-md-10">
+                    <p class="lead">Username: <%= userData.username %></p>
+                    <p class="lead">User ID: <%= userData.id %></p>
+                    <!-- Add other user details as needed -->
+                </div>
+            </div>
+        <% } %>
+
+        <% if (mapelDetails) { 
+            const mapel = mapelDetails.mapelDetails; // Assign mapelDetails to a variable
+        %>
+            <div class="row justify-content-center mt-5">
+                <div class="col-md-10">
+                    <h3>Mapel Details:</h3>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <strong>Mapel ID:</strong> <%= mapel.mapelid %><br>
+                            <strong>Mapel Name:</strong> <%= mapel.mapelname %><br>
+                            <strong>Owner:</strong> <%= mapel.owner %><br>
+                            <strong>Blocked:</strong> <%= mapel.blocked %><br>
+                            <strong>Student:</strong> <%= mapel.mapeluser %><br>
+                            <!-- Display other mapel details as needed -->
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        <% } %>
+
+        <% if (quizData && quizData.quizDetails) { 
+            const quiz = quizData.quizDetails;
+        %>
+            <div class="row justify-content-center mt-5">
+                <div class="col-md-10">
+                    <h3>Quiz Details:</h3>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <strong>Quiz ID:</strong> <%= quiz._id %><br>
+                            <strong>Quiz Name:</strong> <%= quiz.quizname %><br>
+                            <strong>Mapel ID:</strong> <%= quiz.mapelid %><br>
+                            <strong>Owner:</strong> <%= quiz.owner %><br>
+                            <strong>Creator:</strong> <%= quiz.creator %><br>
+                            <!-- Add other quiz details as needed -->
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- Form to create a new question -->
+<div class="row justify-content-center mt-5">
+    <div class="col-md-10">
+        <h3>Create New Question:</h3>
+        <form id="createQuestionForm">
+            <div class="form-group">
+                <label for="question">Question:</label>
+                <textarea class="form-control" id="question" name="question" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="choice1">Choice 1:</label>
+                <input type="text" class="form-control" id="choice1" name="choise[]" required>
+            </div>
+            <div class="form-group">
+                <label for="choice2">Choice 2:</label>
+                <input type="text" class="form-control" id="choice2" name="choise[]" required>
+            </div>
+            <div class="form-group">
+                <label for="choice3">Choice 3:</label>
+                <input type="text" class="form-control" id="choice3" name="choise[]" required>
+            </div>
+            <div class="form-group">
+                <label for="choice4">Choice 4:</label>
+                <input type="text" class="form-control" id="choice4" name="choise[]" required>
+            </div>
+            <div class="form-group">
+                <label for="choice5">Choice 5:</label>
+                <input type="text" class="form-control" id="choice5" name="choise[]" required>
+            </div>
+            <!-- Add more choice input fields as needed -->
+            <button type="submit" class="btn btn-primary">Create Question</button>
+        </form>
+    </div>
+</div>
+
+
+        <!-- Bootstrap JS and Popper.js -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+        <!-- JavaScript code to handle question creation -->
+        <script>
+            document.getElementById('createQuestionForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const question = document.getElementById('question').value;
+                const mapelid = '<%= mapelDetails.mapelDetails.mapelid %>';
+                const quizid = '<%= quizData.quizDetails.quizid %>';
+                const owner = '<%= userData.id %>';
+                const creator = '<%= userData.id %>';
+
+                const choice1 = document.getElementById('choice1').value;
+const choice2 = document.getElementById('choice2').value;
+const choice3 = document.getElementById('choice3').value;
+const choice4 = document.getElementById('choice4').value;
+const choice5 = document.getElementById('choice5').value;
+// Add more choices as needed
+
+const questionData = {
+    question: question,
+    mapelid: mapelid,
+    quizid: quizid,
+    owner: owner,
+    creator: creator,
+    choise: [choice1, choice2, choice3, choice4, choice5] // Add all five choices to the questionData object
+    // Add other question properties if needed
+};
+
+                fetch('http://localhost:51000/api/create/question', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(questionData),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Question created:', data);
+                    // Show success message or handle response as needed
+                })
+                .catch(error => console.error('Error creating question:', error));
+            });
+        </script>
+    </div>
+</body>
+
+</html>

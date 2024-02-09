@@ -1,0 +1,209 @@
+<!-- mapelmanager.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapel Editor</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center">Mapel Editor</h1>
+
+        <% if (userData) { %>
+            <div class="row justify-content-center mt-3">
+                <div class="col-md-10">
+                    <p class="lead">Username: <%= userData.username %></p>
+                    <p class="lead">User ID: <%= userData.id %></p>
+                    <!-- Add other user details as needed -->
+                </div>
+            </div>
+        <% } %>
+
+        <% if (mapelDetails) { 
+            const mapel = mapelDetails.mapelDetails; // Assign mapelDetails to a variable
+        %>
+            <div class="row justify-content-center mt-5">
+                <div class="col-md-10">
+                    <h3>Mapel Details:</h3>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <strong>Mapel ID:</strong> <%= mapel.mapelid %><br>
+                            <strong>Mapel Name:</strong> <%= mapel.mapelname %><br>
+                            <strong>Owner:</strong> <%= mapel.owner %><br>
+                            <strong>Blocked:</strong> <%= mapel.blocked %><br>
+                            <strong>Student:</strong> <%= mapel.mapeluser %><br>
+                            <!-- Display other mapel details as needed -->
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        <% } %>
+
+        <% if (quizData && quizData.quizDetails) { %>
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-10">
+            <h3>All Quizzes:</h3>
+            <% quizData.quizDetails.forEach((quiz) => { %>
+                <a href="/profile/mapel/<%= quiz.mapelid %>/quiz/<%= quiz.quizid %>/edit" class="list-group-item list-group-item-action">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <strong>Quiz ID:</strong> <%= quiz._id %><br>
+                            <strong>Quiz Name:</strong> <%= quiz.quizname %><br>
+                            <strong>Mapel ID:</strong> <%= quiz.mapelid %><br>
+                            <strong>Owner:</strong> <%= quiz.owner %><br>
+                            <strong>Creator:</strong> <%= quiz.creator %><br>
+                            <!-- Add other quiz details as needed -->
+                        </li>
+                    </ul>
+                </a>
+            <% }); %>
+        </div>
+    </div>
+<% } else { %>
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-10">
+            <p>No quizzes available.</p>
+        </div>
+    </div>
+<% } %>
+
+
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-6 text-center">
+                <button type="button" class="btn btn-primary btn-block mt-3" data-toggle="modal" data-target="#createQuizModal">
+                    Create Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS and Popper.js -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+        <!-- Add your custom scripts if any -->
+
+        <!-- Create Quiz Modal -->
+        <div class="modal fade" id="createQuizModal" tabindex="-1" role="dialog" aria-labelledby="createQuizModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createQuizModalLabel">Create New Quiz</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Form to create a new Quiz -->
+                        <form id="createQuizFormModal">
+                            <div class="form-group">
+                                <label for="quizNameModal">Quiz Name:</label>
+                                <input type="text" id="quizNameModal" name="quizname" class="form-control" required>
+                                <!-- Add more input fields for other quiz properties here -->
+                            </div>
+                            <!-- Add a hidden input for the mapel ID -->
+                            <input type="hidden" id="mapelIdModal" name="mapelid" value="<%= mapelDetails.mapelDetails.mapelid %>">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="createQuizModal()">Create Quiz</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Existing content -->
+
+    </div>
+    <!-- Add your script to handle quiz creation -->
+    <script>
+        function createQuizModal() {
+            // Get form data from modal
+            const quizName = document.getElementById('quizNameModal').value;
+            const mapelId = document.getElementById('mapelIdModal').value;
+            const owner = '<%= userData.id %>';
+            const creator = '<%= userData.id %>';
+
+            // Create an object with the quiz input
+            const quizData = {
+                quizname: quizName,
+                mapelid: mapelId,
+                owner: owner,
+                creator: creator
+
+            };
+
+            // Make a POST request to create the quiz
+            fetch('http://localhost:51000/api/create/quiz', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(quizData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Quiz created:', data);
+
+                // Check if the creation was successful
+                if (data.message === 'Quiz created successfully') {
+                    // Display Bootstrap toast for success
+                    showToast('Quiz Created Successfully!', 'alert-success', 5000); // 5000 milliseconds (5 seconds)
+
+                    // Fetch updated mapel data (if needed)
+                    // fetchMapelData();
+                } else {
+                    // Display Bootstrap toast for error
+                    showToast(`Error Creating Quiz: ${data.message}`, 'alert-danger', 5000); // 5000 milliseconds (5 seconds)
+                }
+            })
+            .catch(error => console.error('Error creating quiz:', error));
+
+            // Close the modal
+            $('#createQuizModal').modal('hide');
+        }
+
+        // Function to show Bootstrap toast
+        function showToast(message, alertClass, duration) {
+            const toastElement = document.createElement('div');
+            toastElement.className = `toast ${alertClass}`;
+            toastElement.style.position = 'fixed';
+            toastElement.style.top = '0';
+            toastElement.style.right = '0';
+            toastElement.style.margin = '10px';
+
+            toastElement.innerHTML = `
+                <div class="toast-header">
+                    <strong class="mr-auto">Notification</strong>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            `;
+
+            // Set autohide and delay attributes
+            $(toastElement).toast({ autohide: true, delay: duration });
+
+            // Append toast to the body and show it
+            document.body.appendChild(toastElement);
+            $(toastElement).toast('show');
+
+            // Remove the toast after it is hidden
+            $(toastElement).on('hidden.bs.toast', function () {
+                document.body.removeChild(toastElement);
+            });
+        }
+    </script>
+</body>
+
+</html>

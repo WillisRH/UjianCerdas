@@ -69,40 +69,163 @@ try {
 app.get("/", (req, res) => {
   res.render("index"); // Render the exam page using EJS template
 });
-app.get("/create", (req, res) => {
-  res.render("creator"); // Render the exam page using EJS template
+app.get("/profile/mapel", async (req, res) => {
+    try {
+        // Assuming you have a way to identify the user, e.g., using cookies
+        let cookies = new Cookies(req, res);
+        const userId = cookies.get("id");
+
+        // Fetch user data from the "/api/getuserdata" endpoint
+        const userDataResponse = await fetch("http://localhost:51000/api/getuserdata", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: userId }),
+        });
+
+        const userData = await userDataResponse.json();
+
+        // Fetch mapel data based on the user's ID
+        const mapelDataResponse = await fetch("http://localhost:51000/api/fetch/mapel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ owner: userId }),
+        });
+
+        const mapelData = await mapelDataResponse.json();
+
+		console.log(mapelData)
+
+        // Render the "creator.ejs" template and pass the userData and mapelData
+        res.render("creator", { userData, mapelData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });
+
+app.get("/profile/mapel/:id/edit", async (req, res) => {
+    try {
+        // Assuming you have a way to identify the user, e.g., using cookies
+        let cookies = new Cookies(req, res);
+        const userId = cookies.get("id");
+
+        // Fetch user data from the "/api/getuserdata" endpoint
+        const userDataResponse = await fetch("http://localhost:51000/api/getuserdata", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: userId }),
+        });
+
+        const userData = await userDataResponse.json();
+
+        // Fetch mapel data based on the user's ID and optional mapel ID
+        const mapelIdFromParams = req.params.id; // Extract mapel ID from the URL params
+        const mapelDataResponse = await fetch("http://localhost:51000/api/fetch/mapel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ owner: userId, idmapel: mapelIdFromParams }),
+        });
+
+        const mapelDetails = await mapelDataResponse.json();
+
+        // Fetch quiz data based on the mapel ID
+        const quizDataResponse = await fetch("http://localhost:51000/api/fetch/quiz", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idmapel: mapelIdFromParams }),
+        });
+
+        const quizData = await quizDataResponse.json();
+
+        console.log(quizData);
+
+        // Render the "mapelmanager.ejs" template and pass the userData, mapelDetails, and quizData
+        res.render("mapelmanager", { userData, mapelDetails, quizData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.get("/profile/mapel/:id/quiz/:idquiz/edit", async (req, res) => {
+    try {
+        // Assuming you have a way to identify the user, e.g., using cookies
+        let cookies = new Cookies(req, res);
+        const userId = cookies.get("id");
+
+        // Fetch user data from the "/api/getuserdata" endpoint
+        const userDataResponse = await fetch("http://localhost:51000/api/getuserdata", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: userId }),
+        });
+
+        const userData = await userDataResponse.json();
+
+        // Fetch mapel data based on the user's ID and optional mapel ID
+        const mapelIdFromParams = req.params.id;
+		const quizIdFromParams = req.params.idquiz; // Extract mapel ID from the URL params
+        const mapelDataResponse = await fetch("http://localhost:51000/api/fetch/mapel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ owner: userId, idmapel: mapelIdFromParams }),
+        });
+
+        const mapelDetails = await mapelDataResponse.json();
+
+        // Fetch quiz data based on the mapel ID
+        const quizDataResponse = await fetch("http://localhost:51000/api/fetch/quiz", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idquiz: quizIdFromParams }),
+        });
+
+        const quizData = await quizDataResponse.json();
+
+		console.log(mapelDetails)
+
+        // Render the "quizmanager.ejs" template and pass the userData, mapelDetails, and quizData
+        res.render("quizmanager", { userData, mapelDetails, quizData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
+
+
 
 
 app.get("/done", (req, res) => {
   res.send("done gak bang? done."); // Render the exam page using EJS template
 });
 
-app.post('/mapelcreate', async (req, res) => {
-	try {
-	  // Get the mapel data from the user input
-	  const { mapelname, owner } = req.body;
-	  const cookies = new Cookies(req, res);
-	  const id = cookies.get("id")
+// app.post('/mapelcreate', async (req, res) => {
+// 	try {
+// 	  // Get the mapel data from the user input
+// 	  const { mapelname, owner } = req.body;
+// 	  const cookies = new Cookies(req, res);
+// 	  const id = cookies.get("id")
 
-	  // Create an object with the user input
-	  const mapelData = {
-		mapelname, // Replace with your mapelid input
-		owner: id, // Replace with your owner input
-	  };
+// 	  // Create an object with the user input
+// 	  const mapelData = {
+// 		mapelname, // Replace with your mapelid input
+// 		owner: id, // Replace with your owner input
+// 	  };
   
-	  // Make a POST request to create the mapel
-	  const response = await axios.post('http://localhost:51000/api/mapel/create', mapelData);
+// 	  // Make a POST request to create the mapel
+// 	  const response = await axios.post('http://localhost:51000/api/mapel/create', mapelData);
 
-	  console.log(response.data)
+// 	  console.log(response.data)
 
-	  // Render the "creator" page using EJS after the mapel is created
-	  res.render('creator', { mapelCreated: response.data }); // You can update the EJS rendering as needed
-	} catch (error) {
-	  console.error('Error creating mapel via Axios:', error);
-	  res.status(500).json({ error: 'Failed to create mapel' });
-	}
-  });
+// 	  // Render the "creator" page using EJS after the mapel is created
+// 	  res.render('creator', { mapelCreated: response.data }); // You can update the EJS rendering as needed
+// 	} catch (error) {
+// 	  console.error('Error creating mapel via Axios:', error);
+// 	  res.status(500).json({ error: 'Failed to create mapel' });
+// 	}
+//   });
 
 // Route for receiving user actions (POST request)
 app.post("/log", (req, res) => {
@@ -134,7 +257,7 @@ app.get("/signup", (req, res) => {
 	});
 });
 
-app.post("/home/askme/admin/signupatt", async (req, res) => {
+app.post("/register", async (req, res) => {
 	const email = req.body.email;
 	const username = req.body.username;
 	const password = req.body.password;
@@ -160,7 +283,7 @@ app.post("/home/askme/admin/signupatt", async (req, res) => {
 			throw new Error(response.statusText, "\n Error");
 		}
 		// console.log('Success logged in with username \'' + email + "\'\nRedirecting to admin page! (200)")
-		res.redirect("/home/askme/admin/login");
+		res.redirect("/");
 	} catch (e) {
 		res.render("index.ejs", {
 			title: "Sign Up",
@@ -255,21 +378,45 @@ app.get("/logout", async (req, res) => {
 });
 
 app.get("/profile", async (req, res) => {
-	let cookies = new Cookies(req, res);
-	const id = cookies.get("id");
-	const response = await fetch("http://localhost:51000/api/getuserdata", {
+	try {
+	  let cookies = new Cookies(req, res);
+	  const id = cookies.get("id");
+  
+	  // Fetch user data from your "/api/getuserdata" endpoint
+	  const response = await fetch("http://localhost:51000/api/getuserdata", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ id }),
-	});
-	const data = await response.json();
-	console.log(data)
-
-	res.render("profile.ejs", {
-		title: `${data.username} Profile Pages`,
-		data
-	});
-});
+	  });
+  
+	  const userData = await response.json();
+  
+	  // Now fetch mapel data from "/api/fetch/mapel" using the user's owner ID
+	  const mapelResponse = await fetch("http://localhost:51000/api/fetch/mapel", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		// Assuming you need to pass the owner ID in the request body
+		// Adjust this based on your server's requirements
+		body: JSON.stringify({ owner: userData.id }),
+	  });
+  
+	  const mapelData = await mapelResponse.json();
+  
+	  console.log(mapelData);
+  
+	  res.render("profile.ejs", {
+		title: `${userData.username} Profile Pages`,
+		userData,
+		mapelData,
+	  });
+	} catch (error) {
+	  console.error(error);
+	  res.status(500).json({ error: "Internal Server Error" });
+	}
+  });
+  
+  
+  
 
 
 

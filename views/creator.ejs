@@ -1,25 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapel Creator</title>
+    <title>Mapel Manager</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Mapel Creator</h1>
 
-    <% if (typeof mapelCreated !== 'undefined') { %>
-        <h2>Mapel Created Successfully!</h2>
-        <p>Mapel Name: <%= mapelCreated.mapel.mapelname %></p>
-        <!-- You can display other mapel information here -->
-    <% } %>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center">Mapel Manager</h1>
 
-    <form action="/mapelcreate" method="POST">
-        <label for="mapelname">Mapel Name:</label>
-        <input type="text" id="mapelname" name="mapelname" required><br>
-        <!-- You can add more input fields for other mapel properties here -->
+        <form id="createMapelForm" class="mt-3" onsubmit="event.preventDefault(); createMapel()">
+            <div class="form-group">
+                <label for="mapelname">Mapel Name:</label>
+                <input type="text" id="mapelname" name="mapelname" class="form-control" required>
+                <!-- You can add more input fields for other mapel properties here -->
+            </div>
 
-        <button type="submit">Create Mapel</button>
-    </form>
+            <!-- Add a hidden input for the owner ID -->
+            <input type="hidden" id="owner" name="owner" value="<%= userData.id %>">
+
+            <button type="button" class="btn btn-primary" onclick="createMapel()">Create Mapel</button>
+        </form>
+
+        <ul id="mapelList" class="list-group mt-5">
+            <% if (mapelData && mapelData.mapels) { %>
+                <div class="mt-5">
+                    <h3>Your Mapels:</h3>
+                    <ul class="list-group">
+                        <% mapelData.mapels.forEach(mapel => { %>
+                            <li class="list-group-item">
+                                <strong>Mapel ID:</strong> <%= mapel.mapelid %><br>
+                                <strong>Mapel Name:</strong> <%= mapel.mapelname %><br>
+                                <!-- Add link to edit page -->
+                                <a href="/profile/mapel/<%= mapel.mapelid %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+                                <!-- Display other mapel details as needed -->
+                            </li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% } %>
+            
+        </ul>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        var script=document.createElement('script');
+script.src='https://rawgit.com/paulirish/memory-stats.js/master/bookmarklet.js';
+document.head.appendChild(script);
+
+        function createMapel() {
+            // Get form data
+            event.preventDefault();
+
+            const mapelname = document.getElementById('mapelname').value;
+            const owner = document.getElementById('owner').value;
+
+            // Create an object with the user input
+            const mapelData = {
+                mapelname,
+                owner,
+            };
+
+            // Make a POST request to create the mapel
+            fetch('http://localhost:51000/api/mapel/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(mapelData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Mapel created:', data);
+
+                // Check if the creation was successful
+                if (data.message === 'Mapel created successfully') {
+                    // Display Bootstrap toast for success
+                    showToast('Mapel Created Successfully!', 'alert-success', 5000); // 5000 milliseconds (5 seconds)
+
+                    // Fetch updated mapel data
+                    fetchMapelData();
+                } else {
+                    // Display Bootstrap toast for error
+                    showToast(`Error Creating Mapel: ${data.message}`, 'alert-danger', 5000); // 5000 milliseconds (5 seconds)
+                }
+            })
+            .catch(error => console.error('Error creating mapel:', error));
+        }
+
+        function fetchMapelData() {
+            // Fetch updated mapel data
+            fetch('http://localhost:51000/api/fetch/mapel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ owner: document.getElementById('owner').value }),
+            })
+            .then(response => response.json())
+            .then(mapelData => {
+                console.log('Updated Mapel Data:', mapelData);
+
+                // Update the DOM with the updated mapel data
+                updateMapelList(mapelData);
+            })
+            .catch(error => console.error('Error fetching mapel data:', error));
+        }
+
+        function updateMapelList(mapelData) {
+            const mapelListContainer = document.getElementById('mapelList');
+
+            // Clear the existing mapel list
+            mapelListContainer.innerHTML = '';
+
+            // Add the updated mapel list to the DOM
+            if (mapelData && mapelData.mapels) {
+                mapelData.mapels.forEach(mapel => {
+                    const mapelItem = document.createElement('li');
+                    mapelItem.className = 'list-group-item';
+                    mapelItem.innerHTML = `
+                        <strong>Mapel ID:</strong> ${mapel.mapelid}<br>
+                        <strong>Mapel Name:</strong> ${mapel.mapelname}<br>
+                    `;
+                    mapelListContainer.appendChild(mapelItem);
+                });
+            }
+        }
+
+        function showToast(message, alertClass, duration) {
+    const toastElement = document.createElement('div');
+    toastElement.className = `toast ${alertClass}`;
+    toastElement.style.position = 'fixed';
+    toastElement.style.top = '0';
+    toastElement.style.right = '0';
+    toastElement.style.margin = '10px';
+
+    toastElement.innerHTML = `
+        <div class="toast-header">
+            <strong class="mr-auto">Notification</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            ${message}
+        </div>
+    `;
+
+    // Set autohide and delay attributes
+    $(toastElement).toast({ autohide: true, delay: duration });
+
+    // Append toast to the body and show it
+    document.body.appendChild(toastElement);
+    $(toastElement).toast('show');
+
+    // Remove the toast after it is hidden
+    $(toastElement).on('hidden.bs.toast', function () {
+        document.body.removeChild(toastElement);
+    });
+}
+
+    </script>
+
 </body>
+
 </html>

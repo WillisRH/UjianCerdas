@@ -1,86 +1,71 @@
-<link rel="stylesheet" type="text/css" href="/css/signuphandler.css" />
-<script src="/js/showpw.js"></script>
+<!DOCTYPE html>
+<html lang="en">
 
-<% if (locals.error) { %>
-<h5 class="text-danger">Error!</h5>
-<h6 class="mb-5"><%= error %></h6>
-<% } %>
-<h1>Sign Up</h1>
-<form action="/home/askme/admin/signupatt" method="post">
-  <div class="form-row">
-    <div class="col-12 mt-5">
-      <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="basic-addon1"
-            ><i class="fas fa-user"></i
-          ></span>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <!-- Include Bootstrap CSS and jQuery -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Include your custom script (showpw.js) -->
+  <script src="/js/showpw.js"></script>
+</head>
+
+<body class="bg-light">
+  <div class="container-md mt-5">
+    <h1 class="text-center mb-5">Sign Up</h1>
+    <form class="mx-auto" action="/register" method="post" style="max-width: 500px;">
+      <div class="form-row">
+        <div class="col-12 mb-3">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-user"></i></span>
+            </div>
+            <input name="username" type="text" value="" class="form-control" id="username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" />
+          </div>
         </div>
-        <input
-          name="username"
-          type="text"
-          value=""
-          class="input form-control"
-          id="username"
-          placeholder="Username"
-          aria-label="Username"
-          aria-describedby="basic-addon1"
-        />
-      </div>
-    </div>
-    <div class="col-12">
-      <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="basic-addon1"
-            ><i class="fas fa-envelope"></i
-          ></span>
+        <div class="col-12 mb-3">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            </div>
+            <input name="email" type="email" value="" class="form-control" id="email" placeholder="Email" aria-label="Email" aria-describedby="basic-addon2" />
+          </div>
         </div>
-        <input
-          name="email"
-          type="email"
-          value=""
-          class="input form-control"
-          id="email"
-          placeholder="Email"
-          aria-label="Email"
-          aria-describedby="basic-addon1"
-        />
-      </div>
-    </div>
-    <div class="col-12">
-      <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="basic-addon1"
-            ><i class="fas fa-lock"></i
-          ></span>
+        <div class="col-12 mb-3">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            </div>
+            <input name="password" type="password" value="" class="form-control" id="password" placeholder="Password" required="true" aria-label="password" aria-describedby="basic-addon3" />
+            <div class="input-group-append">
+              <span class="input-group-text" onclick="password_show_hide();">
+                <i class="fas fa-eye" id="show_eye"></i>
+                <i class="fas fa-eye-slash d-none" id="hide_eye"></i>
+              </span>
+            </div>
+          </div>
         </div>
-        <input
-          name="password"
-          type="password"
-          value=""
-          class="input form-control"
-          id="password"
-          placeholder="Password"
-          required="true"
-          aria-label="password"
-          aria-describedby="basic-addon1"
-        />
-        <div class="input-group-append">
-          <span class="input-group-text" onclick="password_show_hide();">
-            <i class="fas fa-eye" id="show_eye"></i>
-            <i class="fas fa-eye-slash d-none" id="hide_eye"></i>
-          </span>
+        <div class="col-sm-12 pt-3 text-right">
+          <p>
+            Already have an account? <a href="/">Sign In</a>
+          </p>
+        </div>
+        <div class="col-12">
+          <button class="btn btn-dark btn-lg mx-auto d-block" type="submit" name="signin">
+            Sign Up
+          </button>
         </div>
       </div>
-    </div>
-    <div class="col-sm-12 pt-3 text-right">
-      <p>
-        Already have an account? <a href="/home/askme/admin/login">Sign In</a>
-      </p>
-    </div>
-    <div class="col-12">
-      <button class="btn btn-dark btn-lg" type="submit" name="signin">
-        Sign Up
-      </button>
-    </div>
+    </form>
   </div>
-</form>
+
+  <!-- Add Bootstrap JS and Popper.js -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+
+</html>
